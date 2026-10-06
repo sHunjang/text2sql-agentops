@@ -1,0 +1,2 @@
+# 파인튜닝 / 추론 (Apple Silicon 전용)
+mlx-lm==0.32.0
