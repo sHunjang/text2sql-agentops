@@ -1,0 +1,30 @@
+{"category": "filter", "question": "타임아웃으로 끝난 실행을 전부 보여줘", "sql": "SELECT * FROM executions WHERE status = 'timeout';"}
+{"category": "aggregate", "question": "전체 실행의 평균 비용은 얼마야?", "sql": "SELECT AVG(cost_usd) FROM executions;"}
+{"category": "group_having", "question": "호출 횟수가 200번 이상인 도구와 그 횟수를 알려줘", "sql": "SELECT tool_name, COUNT(*) AS call_count FROM tool_calls GROUP BY tool_name HAVING COUNT(*) >= 200;"}
+{"category": "top_n", "question": "비용이 가장 많이 든 실행 5개를 보여줘", "sql": "SELECT * FROM executions ORDER BY cost_usd DESC LIMIT 5;"}
+{"category": "join2", "question": "실패한 실행이 많은 에이전트 순으로 보여줘", "sql": "SELECT a.name, COUNT(*) AS failed_count FROM agents a JOIN executions e ON e.agent_id = a.agent_id WHERE e.status = 'failed' GROUP BY a.agent_id, a.name ORDER BY failed_count DESC;"}
+{"category": "join3", "question": "web_search 도구를 호출한 적이 있는 에이전트 이름을 중복 없이 알려줘", "sql": "SELECT DISTINCT a.name FROM agents a JOIN executions e ON e.agent_id = a.agent_id JOIN tool_calls t ON t.execution_id = e.execution_id WHERE t.tool_name = 'web_search';"}
+{"category": "anti_join", "question": "도구를 한 번도 호출하지 않은 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions e WHERE NOT EXISTS (SELECT 1 FROM tool_calls t WHERE t.execution_id = e.execution_id);"}
+{"category": "subquery", "question": "평균 비용보다 비싼 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions WHERE cost_usd > (SELECT AVG(cost_usd) FROM executions);"}
+{"category": "date", "question": "최근 7일 동안 실패한 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions WHERE status = 'failed' AND started_at >= datetime('now', '-7 days');"}
+{"category": "null", "question": "에러 메시지가 기록된 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions WHERE error_message IS NOT NULL;"}
+{"category": "filter", "question": "토큰을 10000개 넘게 쓴 실행을 보여줘", "sql": "SELECT * FROM executions WHERE total_tokens > 10000;"}
+{"category": "filter", "question": "실패한 도구 호출만 보여줘", "sql": "SELECT * FROM tool_calls WHERE status = 'failed';"}
+{"category": "aggregate", "question": "도구 호출의 평균 응답 시간은 얼마야?", "sql": "SELECT AVG(latency_ms) FROM tool_calls;"}
+{"category": "aggregate", "question": "가장 오래 걸린 실행은 몇 ms 걸렸어?", "sql": "SELECT MAX(duration_ms) FROM executions;"}
+{"category": "group_having", "question": "상태별로 실행이 몇 건씩 있는지 알려줘", "sql": "SELECT status, COUNT(*) AS execution_count FROM executions GROUP BY status;"}
+{"category": "group_having", "question": "평균 응답 시간이 1000ms를 넘는 도구와 그 평균을 보여줘", "sql": "SELECT tool_name, AVG(latency_ms) AS avg_latency FROM tool_calls GROUP BY tool_name HAVING AVG(latency_ms) > 1000;"}
+{"category": "top_n", "question": "가장 오래 걸린 실행 3개를 보여줘", "sql": "SELECT * FROM executions ORDER BY duration_ms DESC LIMIT 3;"}
+{"category": "top_n", "question": "비용이 가장 적게 든 성공 실행 5개를 알려줘", "sql": "SELECT * FROM executions WHERE status = 'success' ORDER BY cost_usd ASC LIMIT 5;"}
+{"category": "join2", "question": "에이전트별 총 비용을 많은 순으로 보여주세요", "sql": "SELECT a.name, SUM(e.cost_usd) AS total_cost FROM agents a JOIN executions e ON e.agent_id = a.agent_id GROUP BY a.agent_id, a.name ORDER BY total_cost DESC;"}
+{"category": "join2", "question": "web-researcher 에이전트가 실패한 실행 목록을 보여줘", "sql": "SELECT e.* FROM executions e JOIN agents a ON a.agent_id = e.agent_id WHERE a.name = 'web-researcher' AND e.status = 'failed';"}
+{"category": "join3", "question": "에이전트별로 실패한 도구 호출이 몇 번인지 많은 순으로 알려줘", "sql": "SELECT a.name, COUNT(*) AS failed_tool_calls FROM agents a JOIN executions e ON e.agent_id = a.agent_id JOIN tool_calls t ON t.execution_id = e.execution_id WHERE t.status = 'failed' GROUP BY a.agent_id, a.name ORDER BY failed_tool_calls DESC;"}
+{"category": "join3", "question": "write_file 도구 호출이 실패한 적이 있는 에이전트 이름을 중복 없이 알려줘", "sql": "SELECT DISTINCT a.name FROM agents a JOIN executions e ON e.agent_id = a.agent_id JOIN tool_calls t ON t.execution_id = e.execution_id WHERE t.tool_name = 'write_file' AND t.status = 'failed';"}
+{"category": "anti_join", "question": "sql_query 도구를 한 번도 쓰지 않은 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions e WHERE NOT EXISTS (SELECT 1 FROM tool_calls t WHERE t.execution_id = e.execution_id AND t.tool_name = 'sql_query');"}
+{"category": "anti_join", "question": "도구를 한 번도 호출하지 않은 실행 중에서 실패한 건 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions e LEFT JOIN tool_calls t ON t.execution_id = e.execution_id WHERE t.tool_call_id IS NULL AND e.status = 'failed';"}
+{"category": "subquery", "question": "평균 응답 시간보다 느린 도구 호출은 몇 건이야?", "sql": "SELECT COUNT(*) FROM tool_calls WHERE latency_ms > (SELECT AVG(latency_ms) FROM tool_calls);"}
+{"category": "subquery", "question": "비용이 가장 많이 든 실행을 수행한 에이전트 이름이 뭐야?", "sql": "SELECT name FROM agents WHERE agent_id = (SELECT agent_id FROM executions ORDER BY cost_usd DESC LIMIT 1);"}
+{"category": "date", "question": "지난 30일 동안 시작된 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions WHERE started_at >= datetime('now', '-30 days');"}
+{"category": "date", "question": "2026년 2월에 시작된 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions WHERE started_at >= '2026-02-01' AND started_at < '2026-03-01';"}
+{"category": "null", "question": "에러 메시지가 없는 실행은 몇 건이야?", "sql": "SELECT COUNT(*) FROM executions WHERE error_message IS NULL;"}
+{"category": "null", "question": "에러 메시지가 없는 실행의 평균 소요 시간은 얼마야?", "sql": "SELECT AVG(duration_ms) FROM executions WHERE error_message IS NULL;"}
