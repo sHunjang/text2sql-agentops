@@ -14,3 +14,4 @@ adapters/
 
 # 에디터 설정
 .vscode/
+data/sample.db
